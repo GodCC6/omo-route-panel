@@ -86,6 +86,33 @@ publication and disallow automation-token overrides. Trusted-publisher
 registration and final tagged CI staging require their own verified results;
 neither statement grants formal-version approval.
 
+### Tagged CI candidate and owner-verification handoff
+
+The annotated `v0.1.0` tag points to
+`0832a641a49382984f6d58c0e79630cf7548aad2`. Main Validation run `40857416133`
+passed all jobs. Tagged workflow run `40857672848`, explicitly dispatched with
+`stage=false`, passed its verification job and skipped its registry-writing job.
+Its downloaded 28-file tarball matched the SHA-512 reported by both npm and Bun
+real-host installation checks:
+
+```text
+sha512-yMrAlq2sRwU2XWAY7zoA+ZAxlALKA7na+qRXtX1+Lw0h3/Soj5OwOMRBrPQlODFtIzqYdt96dOpBnkCxnVJGNA==
+```
+
+The npm settings page was inspected through the owner's already logged-in
+browser session, without reading credentials. It confirmed `cc922`, the
+restrictive 2FA package policy, and no saved trusted-publisher connection.
+The correct GitHub form was prepared with direct publish and dist-tag access
+unchecked, but remained unsubmitted when the owner-help window elapsed. The
+browser session was then closed without starting another authentication flow.
+
+Remaining work requires the owner to complete that single browser setup and
+its 2FA confirmation. After verifying the saved stage-only connection, reject
+only this task's bootstrap stage, run `release.yml` with `stage=true`, and check
+the CI/OIDC-produced staged version and provenance. Do not approve the staged
+formal version as part of this rollout. Tagged CI verification alone does not
+prove that OIDC registration or registry staging has succeeded.
+
 See [the maintained release procedure](releasing.md) for clean-history
 publication, bootstrap staging, stage-only OIDC configuration and the
 maintainer's final approval boundary.
