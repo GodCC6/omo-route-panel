@@ -1,0 +1,67 @@
+{
+  "name": "omo-route-panel",
+  "version": "0.1.0",
+  "description": "A native OMO TUI extension for inspecting and editing new-task routing.",
+  "license": "MIT",
+  "author": "OMO Route Panel contributors",
+  "homepage": "https://github.com/GodCC6/omo-route-panel#readme",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/GodCC6/omo-route-panel.git"
+  },
+  "bugs": {
+    "url": "https://github.com/GodCC6/omo-route-panel/issues"
+  },
+  "keywords": ["pi-package", "pi-extension", "omo-extension", "omo", "routing", "tui"],
+  "type": "module",
+  "engines": { "node": "26.11.1" },
+  "packageManager": "bun@1.3.14",
+  "files": [
+    "dist/extension/**/*.js",
+    "dist/src/**/*.js",
+    "README.md",
+    "LICENSE",
+    "THIRD_PARTY_NOTICES.md",
+    "CHANGELOG.md"
+  ],
+  "publishConfig": {
+    "access": "public",
+    "registry": "https://registry.npmjs.org/"
+  },
+  "pi": {
+    "extensions": ["./dist/extension/index.js"]
+  },
+  "scripts": {
+    "check": "tsc --noEmit",
+    "build": "tsc && node scripts/build.mjs",
+    "test": "node scripts/test.mjs base",
+    "test:base": "node scripts/test.mjs base",
+    "test:native": "node scripts/test.mjs native",
+    "test:tui": "node scripts/test-tui.mjs",
+    "test:packaging": "node scripts/check-packaging.mjs",
+    "test:package-host": "node scripts/check-packaging.mjs --host",
+    "check:docs": "node scripts/check-docs.mjs",
+    "prepare:host": "node scripts/prepare-host.mjs",
+    "release:stage": "node scripts/stage-release.mjs",
+    "pack": "node scripts/pack.mjs",
+    "prepack": "bun run build",
+    "validate:base": "node scripts/validate.mjs base",
+    "validate:native": "node scripts/validate.mjs native",
+    "lint": "oxlint --deny-warnings src test scripts"
+  },
+  "dependencies": {
+    "jsonc-parser": "3.3.1"
+  },
+  "peerDependencies": {
+    "@earendil-works/pi-tui": "*"
+  },
+  "peerDependenciesMeta": {
+    "@earendil-works/pi-tui": { "optional": true }
+  },
+  "devDependencies": {
+    "@earendil-works/pi-tui": "npm:@code-yeongyu/senpi-tui@2026.10.23-1",
+    "@types/node": "^26.0.0",
+    "typescript": "^6.0.0",
+    "oxlint": "^1.89.0"
+  }
+}

@@ -1,0 +1,71 @@
+name: Validation
+on:
+  pull_request:
+  push:
+    branches: [main]
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: validation-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  base:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [macos-latest, ubuntu-latest]
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v6
+        with:
+          node-version: 26.11.1
+          package-manager-cache: false
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: 1.3.14
+      - name: Record source and lock identity
+        run: |
+          git rev-parse HEAD
+          shasum -a 256 bun.lock
+          node --version
+          bun --version
+      - name: Account-free frozen installation
+        run: |
+          install_home=$(mktemp -d)
+          install_cache=$(mktemp -d)
+          env -i HOME="$install_home" PATH="$PATH" BUN_INSTALL_CACHE_DIR="$install_cache" BUN_CONFIG_NO_GLOBAL=true bun install --frozen-lockfile
+          git diff --exit-code -- bun.lock
+      - name: Clean isolated base validation without OMO
+        run: |
+          test ! -e "$HOME/.local/bin/omo"
+          bun run validate:base
+      - run: bun run check:docs
+      - name: Real npm tarball and clean npm/Bun consumers
+        run: bun run test:packaging
+  native:
+    runs-on: macos-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v6
+        with:
+          node-version: 26.11.1
+          package-manager-cache: false
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: 1.3.14
+      - run: bun install --frozen-lockfile
+      - name: Acquire a checksum-verified, account-free test host
+        run: bun run prepare:host
+      - run: bun run validate:native
+      - name: Real-host source and packed-extension acceptance
+        run: |
+          bun run test:tui
+          TUI_COLS=18 TUI_ROWS=8 TUI_THEME=light bun run test:package-host

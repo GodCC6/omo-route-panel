@@ -1,0 +1,32 @@
+name: Bug report
+description: Report an extension problem using sanitized, reproducible evidence.
+body:
+  - type: markdown
+    attributes:
+      value: |
+        For vulnerabilities, use the private reporting route in SECURITY.md.
+        Never attach credentials, complete personal configuration, or session transcripts.
+  - type: input
+    id: versions
+    attributes:
+      label: Extension, OMO, Node, and operating-system versions
+    validations:
+      required: true
+  - type: textarea
+    id: reproduction
+    attributes:
+      label: Steps to reproduce
+      description: Prefer a temporary HOME and synthetic model names.
+    validations:
+      required: true
+  - type: textarea
+    id: result
+    attributes:
+      label: Expected and observed behavior
+    validations:
+      required: true
+  - type: textarea
+    id: evidence
+    attributes:
+      label: Sanitized evidence
+      description: Include terminal dimensions and theme for display problems.

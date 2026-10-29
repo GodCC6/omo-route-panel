@@ -1,0 +1,7 @@
+{
+  "version": "5.1.51",
+  "assets": {
+    "darwin-arm64": "6fc53f8674880119f40961d4a24145ce923081c099024282b733b6218c5be2d5",
+    "darwin-x64": "86109efe7cb2aaa59c68f65084a7d797a1a308f783c1f4cd561ab888278608ad"
+  }
+}
