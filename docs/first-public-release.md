@@ -49,6 +49,43 @@ only after the corresponding operations succeed. The earlier
 [open-source readiness record](open-source-readiness.md) is evidence of its
 dated local candidate, not a claim that a formal version was published.
 
+### Public source history
+
+The first public root is `c95ddc4eac253b4bfe4359be735b0ed208d701f1`.
+Its tracked tree is `182f47f4416cc8ac493728bbfb53fa5f47283106`, exactly equal
+to the verified private preparation snapshot. Its independent object store
+contained exactly one commit object, including unreachable objects; the old
+private preparation commit was absent.
+
+All 46 pre-public commits, refs, reflog, index and original repository metadata
+remain in a private local archive outside the public repository. The current
+workspace now follows public `main`; tracked source and ignored local agent
+state stayed in place. Public commits use the maintainer's GitHub noreply
+identity. The first push used the existing SSH agent authenticated as
+`GodCC6`, without expanding the earlier OAuth token's permissions.
+
+### Initial remote verification and correction
+
+Validation run `40855218288` passed the macOS base and real native-host jobs.
+Its Ubuntu base job exposed an existing deleted-executable case:
+`realpath /proc/<pid>/exe` returned `ENOENT` after a same-path, same-digest
+launcher replacement. The existing regression expected verification refusal,
+not an uncaught filesystem error.
+
+Commit `0610fa4` returns unverified for that missing mapped path while retaining
+device/inode and digest checks. No assertion was removed or weakened. The
+complete local base suite still passed 188 tests. Remote Validation run
+`40856498051` then passed all three jobs: base on Ubuntu, base on macOS and
+native host acceptance on macOS.
+
+### Publication controls
+
+The GitHub `npm` environment permits only tag refs matching `v*`. npm package
+policy was set through the official interactive client to require 2FA for
+publication and disallow automation-token overrides. Trusted-publisher
+registration and final tagged CI staging require their own verified results;
+neither statement grants formal-version approval.
+
 See [the maintained release procedure](releasing.md) for clean-history
 publication, bootstrap staging, stage-only OIDC configuration and the
 maintainer's final approval boundary.
