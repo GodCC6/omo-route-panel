@@ -116,3 +116,31 @@ prove that OIDC registration or registry staging has succeeded.
 See [the maintained release procedure](releasing.md) for clean-history
 publication, bootstrap staging, stage-only OIDC configuration and the
 maintainer's final approval boundary.
+
+## Owner confirmation and registry cooldown
+
+The owner subsequently completed the same-page browser confirmation. npm showed
+the saved connection for `GodCC6/omo-route-panel`, `release.yml`, environment
+`npm`, with only `npm stage publish` permitted. Direct publish and dist-tag
+permissions were absent. The connection was pending initial validation, with a
+displayed deadline of `2026-10-31T11:31Z`.
+
+Rejecting the original sole bootstrap stage then also removed npm's
+`0.0.0-stage` placeholder. Registry metadata records that unpublication at
+`2026-10-29T11:34:39.919Z`; the package settings page became unavailable. This
+was a flaw in the original bootstrap procedure, not a failed owner login.
+
+OIDC workflow run `40866607725` passed verification but failed its staging job
+with `E401`. A separate recovery attempt using the same verified compiled
+build, with only a temporary manifest version of `0.1.0-bootstrap.1`, was
+explicitly rejected with `E403`: the name cannot be republished until 24 hours
+have passed. That reservation was not created or published.
+
+The retry window is scheduled for `2026-10-30T11:36:40Z`, allowing two minutes
+after the registry cooldown. Recovery must retain the distinct prerelease
+reservation, recheck or restore the stage-only connection, and retry the failed
+CI staging job without moving the public `v0.1.0` tag. The persisted state of the
+connection after npm's placeholder removal has not yet been verified.
+
+No formal `0.1.0` version has been approved or made publicly installable. The validated
+CI tarball and the complete private source-history archive remain intact.

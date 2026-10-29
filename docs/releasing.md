@@ -129,23 +129,32 @@ logged-in session when the maintainer account (`cc922`) has 2FA enabled:
 
 1. Authenticate interactively in a maintainer terminal (`npm login` / browser
    session for `cc922`).
-2. Build and verify the isolated release tarball (`bun run pack`), then stage it
-   with the repository helper:
+2. Build and verify the isolated release tarball (`bun run pack`). Create a
+   separate bootstrap tarball from that same compiled build, changing only its
+   temporary packaged manifest to a distinct prerelease version such as
+   `0.1.0-bootstrap.1`. Do not change the stable source manifest or its tag.
+   Stage that reservation with an explicit non-default tag:
 
 ```sh
-bun run release:stage /absolute/path/to/verified.tgz
+npm stage publish /absolute/path/to/omo-route-panel-0.1.0-bootstrap.1.tgz --tag bootstrap --access public --ignore-scripts
 ```
 
-   `scripts/stage-release.mjs` runs `npm stage publish --access public --ignore-scripts`
-   against the supplied tarball. Staging a new package creates a public
-   `0.0.0-stage` placeholder on npm so package settings exist, while the actual
-   staged `0.1.0` contents remain unpublished and await approval.
-3. Because a staged version occupies its semver slot (`0.1.0`), reject the
-   bootstrap stage (`npm stage reject` with interactive proof of presence)
-   before GitHub Actions re-stages `0.1.0` from the tagged commit. No formal
-   `0.1.0` approval is performed during bootstrap.
+   Staging a new package creates the public `0.0.0-stage` placeholder so package
+   settings exist. The reservation and formal candidate remain unpublished.
+3. Keep the bootstrap reservation staged while configuring trust and staging
+   the real `0.1.0` through CI. Never approve the reservation. Remove it only
+   after a real version has been approved and the package no longer depends on
+   its initial placeholder.
 4. Configure npm trusted publishing on the created package with stage-only
-   authority:
+   authority. The repository helper `bun run release:stage <verified.tgz>` is for
+   the stable CI candidate, not the prerelease reservation above.
+
+The first rollout demonstrated that rejecting the only staged bootstrap removes
+the initial placeholder too, leaving an unpublished package and triggering npm's
+24-hour republish restriction. A different authentication attempt cannot clear
+that registry cooldown. Do not use the formal version as a disposable bootstrap,
+and do not delete the only bootstrap reservation before the first real release.
+See the dated evidence in [first public release status](first-public-release.md).
 
 | npm setting | Value |
 | --- | --- |
@@ -182,8 +191,8 @@ The verify job checks docs, type/lint/base behavior, a checksum-verified native
 host, native reports and both npm and Bun packaged-host consumers. It retains
 and uploads the **exact tarball those consumers tested**, never a later rebuild.
 
-After bootstrap and OIDC trust binding are configured (and any prior bootstrap
-stage for `0.1.0` has been rejected), run the workflow with `stage=true`:
+After the distinct bootstrap reservation and OIDC trust binding are configured,
+leave that reservation intact and run the workflow with `stage=true`:
 
 ```sh
 gh workflow run release.yml --ref v0.1.0 -f stage=true
