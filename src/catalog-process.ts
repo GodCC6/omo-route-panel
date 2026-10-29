@@ -25,7 +25,11 @@ export async function catalogExecutable(pid: number, signal: AbortSignal): Promi
 }
 
 export async function verifyCatalogExecutable(pid: number, expected: string, signal: AbortSignal): Promise<string | undefined> {
-  const executable = await catalogExecutable(pid, signal);
+  const executable = await catalogExecutable(pid, signal).catch((error: unknown) => {
+    if (error instanceof Error && "code" in error && error.code === "ENOENT") return undefined;
+    throw error;
+  });
+  if (executable === undefined) return undefined;
   const before = await stat(executable, { bigint: true });
   if (process.platform === "darwin") {
     const mapped = await runProcess({
