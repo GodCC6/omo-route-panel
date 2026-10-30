@@ -1,5 +1,44 @@
 # Clean first source publication and staged npm release
 
+## Current result
+
+Verified: 2026-10-30. **`omo-route-panel@0.1.0` is published and installable.**
+The registry records publication by `cc922` at `2026-10-30T14:37:32.804Z`;
+`latest` points to `0.1.0`.
+
+The maintainer requested ordinary account publishing instead of the custom
+stage-only/OIDC process. Commit `4ad4f29` removed the release workflow,
+publication-policy helpers and their seven dedicated tests. All product
+behavior tests remain. Validation run `41064955866` passed on the public main.
+
+| Check | Result |
+| --- | --- |
+| Retained base suite, strict compilation, lint and isolated build | 181 passed, zero failures/skips |
+| Final 28-file tarball installed with npm and Bun | Both real-host acceptance runs passed |
+| Published version and tested tarball | SHA-512 integrity identical |
+| `omo install npm:omo-route-panel@0.1.0` | Exit 0 in a fresh, account-free temporary HOME |
+| `omo list --no-approve` | Recognized the installed npm package |
+| Real OMO loading the registry-installed factory | Complete edit/save/conflict/reload/undo acceptance passed |
+
+The final package integrity is:
+
+```text
+sha512-sfXmwnvwKtQ+9Sb+nh+RR4iVne3LsAx0mWm45Xc51jaUSceB/KA8pmeoRaBgFHFvd40MMqGCuYuF+Mpcizg8FQ==
+```
+
+Publication used the ordinary `cc922` account. npm's own staging option let the
+owner approve the tested artifact from the browser on their current remote
+device; no working OIDC connection or Mac mini browser interaction was needed.
+The extra bootstrap reservation was left untouched during publication.
+The [release guide](releasing.md) describes the simple ongoing procedure.
+Local registry-host proof is retained under `artifacts/public-npm-0.1.0-host`
+(ignored, synthetic data only).
+
+## Earlier rollout history
+
+The remaining sections preserve the previous attempt and its superseded
+stage-only requirements. They are not additional conditions for future releases.
+
 Decision date: 2026-10-29.
 Package: `omo-route-panel`, version `0.1.0`.
 GitHub repository: `GodCC6/omo-route-panel`.
