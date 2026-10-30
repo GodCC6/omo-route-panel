@@ -42,7 +42,6 @@
     "test:package-host": "node scripts/check-packaging.mjs --host",
     "check:docs": "node scripts/check-docs.mjs",
     "prepare:host": "node scripts/prepare-host.mjs",
-    "release:stage": "node scripts/stage-release.mjs",
     "pack": "node scripts/pack.mjs",
     "prepack": "bun run build",
     "validate:base": "node scripts/validate.mjs base",

@@ -6,6 +6,12 @@ GitHub repository: `GodCC6/omo-route-panel`.
 npm owner: `cc922`; the authenticated account reports 2FA for authentication
 and writes.
 
+Current direction (2026-10-30): use ordinary npm account publishing, with npm's
+website approval on the owner's current device when working remotely. The
+custom stage-only/OIDC workflow and its policy helpers have been removed.
+The staged/OIDC sections below preserve the earlier attempt, not an active
+publication requirement. Published-version verification is recorded at the end.
+
 ## Approved publication boundary
 
 The maintainer approved a clean first public Git history, retaining the complete

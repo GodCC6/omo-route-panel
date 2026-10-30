@@ -7,13 +7,11 @@ upstream recommendations, your overrides and the effective candidate chains
 against the current host's available models. Open it with `/route-panel`
 inside OMO; no browser or background server is required.
 
-**Release status (2026-10-29):** version `0.1.0` is a release candidate and
-remains unavailable for normal npm installation until its staged release is
-approved (a `0.0.0-stage` registry placeholder may exist during staged
-bootstrap). See [first public release status](https://github.com/GodCC6/omo-route-panel/blob/main/docs/first-public-release.md)
-for public source availability, CI validation and staging status, and the
+The npm package contains the precompiled extension. See
+[first public release status](https://github.com/GodCC6/omo-route-panel/blob/main/docs/first-public-release.md)
+for the verified version and installation results, and the
 [release guide](https://github.com/GodCC6/omo-route-panel/blob/main/docs/releasing.md)
-for the stage-only workflow.
+for ordinary npm account publishing.
 
 ### Features
 
@@ -34,19 +32,19 @@ Prerequisites: an interactive OMO installation and Node `26.11.1` on PATH for
 restricted native-report workers. Set `OMO_ROUTE_PANEL_NODE_PATH` to an absolute
 Node executable path if needed. See compatibility below before loading.
 
-After npm publication, persistent installation is intended to use:
+Install persistently in OMO:
 
 ```sh
 omo install npm:omo-route-panel
 ```
 
-For one session after publication:
+For one session:
 
 ```sh
 omo -e npm:omo-route-panel
 ```
 
-Until publication is confirmed, build a source checkout:
+Alternatively, build a source checkout:
 
 ```sh
 bun install --frozen-lockfile
@@ -123,9 +121,9 @@ implementation evidence, not current installation guidance.
 上游推荐、个人覆盖与有效候选链。在 OMO 内运行 `/route-panel` 即可打开；无需浏览器
 或后台服务器。
 
-**发布状态（2026-10-29）：** `0.1.0` 为候选版本，在预发布（staged release）完成审批前尚不可通过
-npm 正常安装（预发布引导期间注册表可能存在 `0.0.0-stage` 占位版本）。公开源码、CI 验证与预发布进展见
-[首次公开发布状态](https://github.com/GodCC6/omo-route-panel/blob/main/docs/first-public-release.md)，仅预发布（stage-only）流程见[发布指南](https://github.com/GodCC6/omo-route-panel/blob/main/docs/releasing.md)。
+npm 包包含预编译扩展。已验证版本与安装结果见
+[首次公开发布状态](https://github.com/GodCC6/omo-route-panel/blob/main/docs/first-public-release.md)，
+普通 npm 账号发布步骤见[发布指南](https://github.com/GodCC6/omo-route-panel/blob/main/docs/releasing.md)。
 
 ### 功能
 
@@ -144,19 +142,19 @@ npm 正常安装（预发布引导期间注册表可能存在 `0.0.0-stage` 占�
 必要时通过 `OMO_ROUTE_PANEL_NODE_PATH` 指定 Node 可执行文件的绝对路径。加载前请阅读
 下方兼容性说明。
 
-npm 发布后的预期持久安装方式：
+在 OMO 中持久安装：
 
 ```sh
 omo install npm:omo-route-panel
 ```
 
-npm 发布后的单次会话加载方式：
+单次会话加载：
 
 ```sh
 omo -e npm:omo-route-panel
 ```
 
-发布得到确认之前，可从源码检出目录构建：
+也可从源码检出目录构建：
 
 ```sh
 bun install --frozen-lockfile
