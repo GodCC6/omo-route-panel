@@ -144,3 +144,30 @@ connection after npm's placeholder removal has not yet been verified.
 
 No formal `0.1.0` version has been approved or made publicly installable. The validated
 CI tarball and the complete private source-history archive remain intact.
+
+## Recovery after the registry cooldown
+
+Verification date: 2026-10-30.
+
+The owner's expired CLI login was renewed through npm's official attended
+browser flow, and `npm whoami` confirmed `cc922`. The distinct reservation
+`0.1.0-bootstrap.1` was successfully staged under tag `bootstrap` at
+`2026-10-30T12:28:12.446Z`, with stage ID
+`49a30480-6ae7-4a5c-b50b-d5bf82244d4c`.
+
+`npm stage view` confirmed that reservation remains staged and has SHA-1
+`ad3c865b10526c349aa5bdfb1ba2752f4704f437`. Its SHA-512 integrity is:
+
+```text
+sha512-/CoOTbTXh/M6+EM6+5447wHoJAoMpGXhJxkd/vm8se3uFnSNQxPNwiJXNUxQHqWdDwsXScUrGfWrXTBvCi77ZQ==
+```
+
+The public `0.0.0-stage` placeholder and `cc922` ownership are restored. The
+reservation must remain staged until a real version has been approved; it is
+not an installable `0.1.0` release.
+
+The restored settings page shows the restrictive 2FA policy but no saved
+trusted-publisher connection. The connection did not survive the placeholder
+removal. A replacement stage-only form was prepared, but owner verification
+reported an error and no saved connection has been observed. Recovery has not
+rerun CI/OIDC staging or requested formal-version approval.
