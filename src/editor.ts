@@ -106,9 +106,9 @@ export function createPanelController(options: {
     const expectedEpoch = epoch;
     const ctx = context(scope);
     const catalog = await options.adapter.catalog(ctx);
-    if (catalog.status !== "ok") throw new PanelError(catalog.code, "The host model registry could not be read. No empty catalog was substituted.");
+    if (catalog.status !== "ok") throw new PanelError(catalog.code, `The host model registry could not be read (${catalog.code}). No empty catalog was substituted.`);
     const resolved = await options.adapter.resolve({ ...ctx, catalog });
-    if (resolved.status !== "ok") throw new PanelError(resolved.code, "Native routing verification failed. Configuration is read-only until resolved.");
+    if (resolved.status !== "ok") throw new PanelError(resolved.code, `Native routing verification failed (${resolved.code}). Configuration is read-only until resolved.`);
     const inspection = resolved.value.inspection;
     const source = inspection.files.find((file) => file.scope === "user");
     if (!source) throw new PanelError("source-missing", "The user configuration source could not be located.");

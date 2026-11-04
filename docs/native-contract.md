@@ -1,6 +1,6 @@
 # Native Report and Adaptation Contract
 
-Maintained contract updated: 2026-10-29. OMO is the running host; this repository
+Maintained contract updated: 2026-11-04. OMO is the running host; this repository
 supplies an independently loaded extension. The
 [retired server adapter contract](archive/web/native-contract.md) preserves old
 interfaces and inspection evidence, not current entrypoints.
@@ -12,20 +12,27 @@ structural validation, launcher/runtime binding, restricted workers and
 real/mirror equivalence. Never copy the routing algorithm into presentation,
 tests or a second SDK runtime.
 
-`src/runtime.ts` discovers report artifacts for the active installation.
-`src/extension.ts` binds it to the running host's executable identity; macOS
-checks include the mapped file's device/inode, not merely the replacement file
-currently on disk. Native report loading re-verifies installation identity.
-An upgrade cannot mix an old running host with another runtime's reports just
-because version strings look compatible. Source paths and symbols remain
-implementation details inside this adaptation boundary.
+`src/runtime.ts` discovers report artifacts for the active installation. A
+supported host is either a standalone runtime with an adjacent native `omo`
+binary or a globally installed npm `omo-ai` package whose declared `bin.omo`
+JavaScript entry point is the launcher. `src/extension.ts` binds the installation
+to the running host: a native runtime is bound to its executable identity, where
+macOS checks include the mapped file's device/inode, not merely the replacement
+file currently on disk; an npm package is bound through the host-declared
+launcher and the running engine entry beneath that package root. Native report
+loading re-verifies installation identity. An upgrade cannot mix an old running
+host with another runtime's reports just because version strings look compatible.
+Source paths and symbols remain implementation details inside this adaptation
+boundary.
 
 Workers execute read-only report modules in separate Node processes with
 restricted permissions and a controlled environment. They cannot perform
 network access, writes, inference or child-session creation. Node permissions
 guard trusted local code against accidental access, not hostile code. Missing
 artifacts, invalid shapes, doctor diagnostics or real/mirror differences fail
-closed with sanitized error codes.
+closed with sanitized error codes. A check that fails while opening the panel
+keeps that safe code in the user-facing message instead of folding installation,
+registry and configuration failures into one generic sentence.
 
 ## Interpretation and configuration fidelity
 

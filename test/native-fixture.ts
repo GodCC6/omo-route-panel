@@ -50,3 +50,19 @@ export async function futureRuntime(home: string, name: string, malformed = fals
   `);
   return root;
 }
+
+/** A global npm host: a JavaScript launcher in `bin/` beside the package runtime. */
+export async function futureNpmRuntime(home: string, version: string): Promise<string> {
+  const root = join(home, "omo-ai");
+  await mkdir(join(root, "bin"), { recursive: true });
+  await mkdir(join(root, "plugin/runtime/category-coverage"), { recursive: true });
+  await writeFile(join(root, "package.json"), JSON.stringify({
+    name: "omo-ai", version, type: "module", bin: { omo: "bin/omo.js" },
+  }));
+  await writeFile(join(root, "bin/omo.js"), "#!/usr/bin/env node\n");
+  await writeFile(join(root, "plugin/runtime/category-coverage/index.js"), `
+    export function modelChains() { return {"categories":[],"agents":[],"excludeModels":[],"modelProfile":{}}; }
+    export function configDoctorLines() { return []; }
+  `);
+  return root;
+}

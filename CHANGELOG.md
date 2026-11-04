@@ -4,6 +4,16 @@ User-visible changes are recorded here. Version numbers follow Semantic
 Versioning; a `0.x` minor release may change extension or configuration
 contracts. Dates identify releases, not local verification runs.
 
+## Unreleased
+
+### Fixed
+
+- A globally installed npm `omo-ai` host is recognized from its declared
+  JavaScript launcher, so `/route-panel` no longer fails host verification on
+  that installation layout.
+- Host verification failures keep their safe stage/error code in the user-facing
+  message instead of folding every failure into one generic sentence.
+
 ## 0.1.0 - 2026-10-30
 
 ### Added

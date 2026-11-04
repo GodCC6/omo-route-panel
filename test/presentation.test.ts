@@ -15,7 +15,7 @@ test("route projections preserve disabled and unavailable native status even wit
   };
   const inspection: NativeInspection = {
     home: "/synthetic", project: "/synthetic", files: [], watchPaths: [],
-    engine: { version: "", moduleDigest: "", nodeVersion: "", runtimeRoot: "", nodePath: "", nodeSourcePath: "", launcherPath: "", launcherSourcePath: "", launcherDigest: "" },
+    engine: { version: "", moduleDigest: "", nodeVersion: "", runtimeRoot: "", nodePath: "", nodeSourcePath: "", launcherPath: "", launcherSourcePath: "", launcherDigest: "", layout: "binary" },
     settings: { globalPath: "", projectPath: "", projectInfluence: "unknown", pathStatus: "verified-global" },
   };
   // When
@@ -33,7 +33,7 @@ for (const legacy of [false, true]) {
     };
     const inspection: NativeInspection = {
       home: "/synthetic", project: "/synthetic", files: [], watchPaths: [],
-      engine: { version: "", moduleDigest: "", nodeVersion: "", runtimeRoot: "", nodePath: "", nodeSourcePath: "", launcherPath: "", launcherSourcePath: "", launcherDigest: "" },
+      engine: { version: "", moduleDigest: "", nodeVersion: "", runtimeRoot: "", nodePath: "", nodeSourcePath: "", launcherPath: "", launcherSourcePath: "", launcherDigest: "", layout: "binary" },
       settings: { globalPath: "", projectPath: "", projectInfluence: "unknown", pathStatus: "verified-global" },
     };
     const doc = parseDocument(JSON.stringify({ "[native]": { categories: { custom: {

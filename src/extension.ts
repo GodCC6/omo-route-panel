@@ -1,17 +1,27 @@
 import { homedir } from "node:os";
+import { realpath } from "node:fs/promises";
+import { resolve } from "node:path";
 import { matchesKey, wrapTextWithAnsi } from "@earendil-works/pi-tui";
 import type { TUI } from "@earendil-works/pi-tui";
 import { catalogExecutable, verifyCatalogExecutable } from "./catalog-process.js";
 import { createPanelController } from "./editor.js";
-import { PanelError } from "./errors.js";
+import { hostFailure, PanelError } from "./errors.js";
 import { catalogSnapshot, createNativeAdapter } from "./native/index.js";
-import { NativeError } from "./native/config.js";
+import { inside, NativeError } from "./native/config.js";
 import { runProcess } from "./native/process.js";
 import { installedRuntime } from "./runtime.js";
 import { createPanelComponent } from "./tui.js";
 import type { PanelController } from "./tui-contract.js";
 import type { NativeModel } from "./native/index.js";
 import type { PanelComponent } from "./tui.js";
+
+/** The started engine must still come from the installation whose reports are loaded. */
+async function engineEntryInside(runtimeRoot: string): Promise<boolean> {
+  const entry = process.argv[1];
+  if (entry === undefined) return false;
+  try { return inside(runtimeRoot, await realpath(resolve(entry))); }
+  catch { return false; }
+}
 
 /** The public host seam used here, intentionally independent of SDK internals. */
 export interface HostContext {
@@ -65,7 +75,12 @@ export function extension(api: HostAPI): void {
       const abort = new AbortController();
       let controller: PanelController | null = null;
       try {
-        const launcherPath = await catalogExecutable(process.pid, abort.signal);
+        // OMO declares its own launcher, including an npm package's JavaScript entry point. The
+        // running process image is only the launcher for a standalone native runtime.
+        const declaredLauncher = process.env["OMO_BIN"]?.trim();
+        const launcherPath = declaredLauncher
+          ? resolve(declaredLauncher)
+          : await catalogExecutable(process.pid, abort.signal);
         const installation = await installedRuntime({ launcherPath });
         const nodePath = process.env["OMO_ROUTE_PANEL_NODE_PATH"] ?? (await runProcess({
           executable: "node", args: ["-p", "process.execPath"], cwd: homedir(),
@@ -85,8 +100,17 @@ export function extension(api: HostAPI): void {
             },
             verify: async (engine) => {
               if (generation !== expectedGeneration || abort.signal.aborted) throw new NativeError("host-retired");
-              if (engine.launcherDigest !== installation.launcherDigest || engine.runtimeRoot !== installation.runtimeRoot
-                || !await verifyCatalogExecutable(process.pid, installation.launcherDigest, abort.signal)) {
+              if (engine.layout !== installation.layout || engine.launcherDigest !== installation.launcherDigest
+                || engine.runtimeRoot !== installation.runtimeRoot || engine.version !== installation.version) {
+                throw new NativeError("host-installation-changed");
+              }
+              // A native runtime is bound by its mapped process image. An npm launcher is a script
+              // outside the process image, so bind the running engine entry to its package tree.
+              if (installation.layout === "binary") {
+                if (!await verifyCatalogExecutable(process.pid, installation.launcherDigest, abort.signal)) {
+                  throw new NativeError("host-installation-changed");
+                }
+              } else if (!await engineEntryInside(installation.runtimeRoot)) {
                 throw new NativeError("host-installation-changed");
               }
             },
@@ -128,7 +152,8 @@ export function extension(api: HostAPI): void {
         });
       } catch (error) {
         if (error instanceof Error && expectedGeneration === generation) {
-          ctx.ui.notify(error instanceof PanelError ? error.message : "Route Panel could not verify the host installation, model registry or configuration.", "error");
+          ctx.ui.notify(error instanceof PanelError ? error.message
+            : hostFailure(error, "Route Panel could not verify the host installation, model registry or configuration."), "error");
         } else if (!(error instanceof Error)) throw error;
       } finally {
         controller?.close();
