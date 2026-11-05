@@ -34,6 +34,8 @@ export interface NativeEngine {
   readonly launcherPath: string;
   readonly launcherSourcePath: string;
   readonly launcherDigest: string;
+  /** How the host installation is launched: a native `omo` binary or an npm `omo-ai` package. */
+  readonly layout: "binary" | "npm";
 }
 export interface NativeSource {
   readonly sourceId: string;

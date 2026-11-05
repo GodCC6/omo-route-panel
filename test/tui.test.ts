@@ -11,7 +11,7 @@ const route: Route = {
   override: null, effective: [{ model: "host/old" }], selected: "host/old", evidence: [], diagnostics: [],
 };
 const inspection: NativeInspection = {
-  engine: { version: "fixture", moduleDigest: "", nodeVersion: "", runtimeRoot: "", nodePath: "", nodeSourcePath: "", launcherPath: "", launcherSourcePath: "", launcherDigest: "" },
+  engine: { version: "fixture", moduleDigest: "", nodeVersion: "", runtimeRoot: "", nodePath: "", nodeSourcePath: "", launcherPath: "", launcherSourcePath: "", launcherDigest: "", layout: "binary" },
   home: "/synthetic", project: "/synthetic/project", files: [], watchPaths: [],
   settings: { globalPath: "/synthetic/settings", projectPath: "/synthetic/project/settings", projectInfluence: "unknown", pathStatus: "verified-global" },
 };

@@ -86,8 +86,14 @@ changes and Refresh require applying or discarding pending changes first.
 
 The recorded native-host acceptance environment is macOS arm64 with OMO
 `5.1.51`. Node engines remain exactly `26.11.1`; no broader Node, OMO or operating
-system support is implied. Host installation identity, report structure,
-real/mirror equivalence and registry availability are checked at runtime.
+system support is implied. Host discovery recognizes a standalone OMO runtime
+and a globally installed npm `omo-ai` package. npm verification binds the declared
+launcher, actual engine entry and loaded OMO plugin to package artifacts unchanged
+since process startup. After upgrading OMO, restart the host before opening the
+panel; see the [npm identity requirements](https://github.com/GodCC6/omo-route-panel/blob/main/docs/native-contract.md).
+Host installation identity,
+report structure, real/mirror equivalence and registry availability are checked
+at runtime.
 Unavailable evidence is explained rather than replaced with guessed semantics.
 Complete references preserve `provider + "/" + rawModelId`, including nested
 provider-like segments. Availability does not prove provider health, successful
@@ -189,8 +195,12 @@ npm 分发设计为携带预编译的 `dist/src`
 ### 兼容性与边界
 
 已记录的原生宿主验收环境为 macOS arm64 和 OMO `5.1.51`。Node engines 仍精确限定
-为 `26.11.1`，不据此宣称支持更广的 Node、OMO 版本或操作系统。运行时检查宿主安装
-身份、报告结构、真实与镜像解析一致性以及注册表可用性；证据不足时明确说明，不猜测语义。
+为 `26.11.1`，不据此宣称支持更广的 Node、OMO 版本或操作系统。宿主发现同时识别独立
+OMO runtime 与全局安装的 npm `omo-ai` 包；后者将声明的 launcher、实际引擎入口与已加载的
+OMO 插件绑定到进程启动以来未变化的包文件。升级 OMO 后，请重启宿主再打开面板；
+具体前提见 [npm 身份校验要求](https://github.com/GodCC6/omo-route-panel/blob/main/docs/native-contract.md)。运行时检查宿主安装身份、
+报告结构、真实与镜像解析一致性以及注册表
+可用性；证据不足时明确说明，不猜测语义。
 完整模型引用严格保留 `provider + "/" + rawModelId`，包括 ID 内类似 provider 的嵌套片段。
 可用集合不证明供应商健康、推理成功或活动会话的配置。
 

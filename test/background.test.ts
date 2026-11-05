@@ -28,7 +28,7 @@ const evidence = await loadBackgroundEvidence(runtimeRoot);
 function inspection(configs: readonly ConfigObject[], profile?: string): NativeInspection {
   return {
     home: "/fixture", project: "/fixture/project", ...(profile ? { profile } : {}),
-    engine: { version: "fixture", moduleDigest: "", runtimeRoot, nodePath: "", nodeVersion: "", nodeSourcePath: "", launcherPath: "", launcherSourcePath: "", launcherDigest: "" },
+    engine: { version: "fixture", moduleDigest: "", runtimeRoot, nodePath: "", nodeVersion: "", nodeSourcePath: "", launcherPath: "", launcherSourcePath: "", launcherDigest: "", layout: "binary" },
     files: configs.map((config, index) => ({ config, path: `/fixture/${index}`, sourceId: String(index), relativePath: String(index), scope: index === 0 ? "user" : "project", revision: "" })),
     watchPaths: [], settings: { globalPath: "", projectPath: "", projectInfluence: "unknown", pathStatus: "verified-global" },
   };

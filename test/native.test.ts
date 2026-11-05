@@ -1,12 +1,12 @@
 import { strict as assert } from "node:assert";
 import { test } from "node:test";
-import { mkdir, writeFile, symlink, rename } from "node:fs/promises";
+import { mkdir, writeFile, symlink, rename, realpath } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { createNativeAdapter } from "../src/native/index.js";
 import { discover, projectConfig } from "../src/native/config.js";
 import { runProcess } from "../src/native/process.js";
-import { fixture, futureRuntime, models, syntheticCatalogAdapter } from "./native-fixture.js";
+import { fixture, futureRuntime, futureNpmRuntime, models, syntheticCatalogAdapter } from "./native-fixture.js";
 import { catalogSnapshot } from "../src/native/catalog.js";
 import { NativeError } from "../src/native/config.js";
 
@@ -188,6 +188,23 @@ test("an unlisted future OMO version works when its actual contract is compatibl
   // Then
   assert.equal(result.status, "ok", JSON.stringify(result));
   if (result.status === "ok") assert.equal(result.value.inspection.engine.version, "future-not-in-any-version-list");
+});
+
+test("an npm omo-ai JavaScript launcher resolves the package runtime report", async (t) => {
+  // Given a global npm host layout: the launcher is bin/omo.js, not a native binary.
+  const f = await fixture(t);
+  const root = await futureNpmRuntime(f.home, "5.1.60");
+  // When
+  const result = await syntheticCatalogAdapter({ home: f.home, launcherPath: join(root, "bin/omo.js") })
+    .resolve({ project: f.project, catalog: models });
+  // Then
+  assert.equal(result.status, "ok", JSON.stringify(result));
+  if (result.status === "ok") {
+    assert.equal(result.value.inspection.engine.layout, "npm");
+    assert.equal(result.value.inspection.engine.version, "5.1.60");
+    assert.equal(result.value.inspection.engine.runtimeRoot, await realpath(root));
+    assert.equal(result.value.inspection.engine.launcherSourcePath, join(root, "bin/omo.js"));
+  }
 });
 
 test("a future OMO version with a malformed report still fails closed", async (t) => {

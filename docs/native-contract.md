@@ -1,6 +1,6 @@
 # Native Report and Adaptation Contract
 
-Maintained contract updated: 2026-10-29. OMO is the running host; this repository
+Maintained contract updated: 2026-11-05. OMO is the running host; this repository
 supplies an independently loaded extension. The
 [retired server adapter contract](archive/web/native-contract.md) preserves old
 interfaces and inspection evidence, not current entrypoints.
@@ -12,20 +12,56 @@ structural validation, launcher/runtime binding, restricted workers and
 real/mirror equivalence. Never copy the routing algorithm into presentation,
 tests or a second SDK runtime.
 
-`src/runtime.ts` discovers report artifacts for the active installation.
-`src/extension.ts` binds it to the running host's executable identity; macOS
-checks include the mapped file's device/inode, not merely the replacement file
-currently on disk. Native report loading re-verifies installation identity.
-An upgrade cannot mix an old running host with another runtime's reports just
-because version strings look compatible. Source paths and symbols remain
-implementation details inside this adaptation boundary.
+`src/runtime.ts` discovers report artifacts for the active installation. A
+supported host is either a standalone runtime with an adjacent native `omo`
+binary or a globally installed npm `omo-ai` package whose declared `bin.omo`
+JavaScript entry point is the launcher. `src/extension.ts` binds the installation
+to the running host: a native runtime is bound to its executable identity, where
+macOS checks include the mapped file's device/inode, not merely the replacement
+file currently on disk. For npm, `src/npm-host.ts` resolves the launcher's Senpi
+dependency (nested or hoisted), matches the actual process entry to that package's
+declared executable, and matches the OMO plugin manifest's entrypoints against the
+host's public `loadedExtensionPaths`. Path containment alone cannot bind code
+already loaded into memory.
+
+The npm binding additionally requires all files and directory entries in the
+OMO and Senpi packages to have filesystem change times strictly before the
+process's `performance.timeOrigin`, rounded down to a whole second. The check
+excludes nested dependency contents, checking the resolved Senpi package
+separately; registry evidence still comes from the running host. It rejects
+symlinks within package artifacts and checks retained launcher, engine and loaded
+extension paths for symlinks retargeted after startup. This establishes that the
+package artifacts now read by report workers were already present, unchanged,
+before any engine or extension code could load. Preserving an old mtime or version
+does not preserve ctime. Loading Route Panel only after an npm upgrade therefore
+cannot establish a fresh baseline for an old running engine.
+
+This npm contract supports macOS/Linux installations on local filesystems with
+ordinary POSIX ctime semantics and resolution of one second or better. It assumes
+the installation's ancestor directories stay in place, externally managed
+dependencies remain unchanged, and the filesystem clock has not moved backwards
+across process start.
+Restored filesystem snapshots, rewritten ancestor mounts, custom engine loaders,
+artifact symlinks, and hosts without `loadedExtensionPaths` cannot supply this
+proof. The panel does not claim support for those cases. Metadata-only changes
+also conservatively require a host restart; installations changed in the host's
+startup second require restarting in a later second. No on-disk identity captured
+at extension registration or panel opening substitutes for this startup boundary.
+
+Native report loading re-verifies this binding before and after report operations,
+including Apply. An upgrade cannot mix an old running host with another runtime's
+reports just because version strings look compatible.
+Source paths and symbols remain implementation details inside this adaptation
+boundary.
 
 Workers execute read-only report modules in separate Node processes with
 restricted permissions and a controlled environment. They cannot perform
 network access, writes, inference or child-session creation. Node permissions
 guard trusted local code against accidental access, not hostile code. Missing
 artifacts, invalid shapes, doctor diagnostics or real/mirror differences fail
-closed with sanitized error codes.
+closed with sanitized error codes. A check that fails while opening the panel
+keeps that safe code in the user-facing message instead of folding installation,
+registry and configuration failures into one generic sentence.
 
 ## Interpretation and configuration fidelity
 

@@ -21,7 +21,18 @@ async function fixture(t: { after(fn: () => Promise<void>): void }) {
     `);
     return root;
   }
-  return { home, runtime };
+  async function npmRuntime(version: string, root = join(home, "omo-ai")) {
+    await mkdir(join(root, "bin"), { recursive: true });
+    await mkdir(join(root, "plugin/runtime/category-coverage"), { recursive: true });
+    await writeFile(join(root, "package.json"), JSON.stringify({ name: "omo-ai", version, type: "module", bin: { omo: "bin/omo.js" } }));
+    await writeFile(join(root, "bin/omo.js"), "#!/usr/bin/env node\n");
+    await writeFile(join(root, "plugin/runtime/category-coverage/index.js"), `
+      export function modelChains() { return {categories:[],agents:[],excludeModels:[],modelProfile:{}}; }
+      export function configDoctorLines() { return []; }
+    `);
+    return root;
+  }
+  return { home, runtime, npmRuntime };
 }
 
 test("direct launcher discovery works without a runtime cache", async (t) => {
@@ -34,6 +45,34 @@ test("direct launcher discovery works without a runtime cache", async (t) => {
   assert.equal(found.runtimeRoot, await realpath(root));
   assert.equal(found.launcherPath, await realpath(join(root, "omo")));
   assert.equal(found.launcherDigest, await fileDigest(join(root, "omo")));
+});
+
+test("npm JavaScript launchers bind the package runtime without a native binary", async (t) => {
+  // Given a global npm host and a PATH link to its JavaScript entry point.
+  const f = await fixture(t);
+  const root = await f.npmRuntime("5.1.60");
+  await mkdir(join(f.home, "bin"), { recursive: true });
+  const launcher = join(f.home, "bin", "omo");
+  await symlink(join(root, "bin/omo.js"), launcher);
+  // When
+  const found = await installedRuntime({ home: f.home, launcherPath: launcher });
+  // Then
+  assert.equal(found.layout, "npm");
+  assert.equal(found.version, "5.1.60");
+  assert.equal(found.runtimeRoot, await realpath(root));
+  assert.equal(found.launcherSourcePath, launcher);
+  assert.equal(found.launcherPath, await realpath(join(root, "bin/omo.js")));
+  assert.equal(found.launcherDigest, await fileDigest(join(root, "bin/omo.js")));
+});
+
+test("an npm JavaScript launcher must be the package's declared bin", async (t) => {
+  // Given
+  const f = await fixture(t);
+  const root = await f.npmRuntime("5.1.60");
+  const other = join(root, "bin", "other.js");
+  await writeFile(other, "#!/usr/bin/env node\n");
+  // When / Then
+  await assert.rejects(installedRuntime({ home: f.home, launcherPath: other }), { code: "engine-launcher-mismatch" });
 });
 
 test("linked launchers retain their source and canonical target without a cache", async (t) => {

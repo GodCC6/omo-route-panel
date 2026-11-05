@@ -10,6 +10,7 @@ substitutes for release-candidate validation.
 - [Contribution setup, architecture and isolated validation](../CONTRIBUTING.md)
 - [Security boundaries and private reporting setup](../SECURITY.md)
 - [Release, npm artifact verification and publication](releasing.md)
+- [0.1.1 release verification](release-0.1.1.md)
 - [Open-source readiness and remaining release inputs](open-source-readiness.md)
 
 ## Current product and implementation contracts

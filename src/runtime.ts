@@ -9,6 +9,34 @@ import { runProcess } from "./native/process.js";
 
 const hashes = new Map<string, { readonly identity: string; readonly digest: string }>();
 
+/** A standalone runtime ships a native `omo` binary; a global npm package ships a JavaScript launcher. */
+export type RuntimeLayout = "binary" | "npm";
+
+/** Match one package root to the launcher's identity and supported host layout. */
+async function runtimeMatch(runtimeRoot: string, launcherPath: string, launcherDigest: string): Promise<{
+  readonly version: string;
+  readonly runtimeRoot: string;
+  readonly layout: RuntimeLayout;
+} | undefined> {
+  const manifest: unknown = JSON.parse(await readFile(join(runtimeRoot, "package.json"), "utf8"));
+  if (!object(manifest) || typeof manifest["version"] !== "string") return undefined;
+  if (manifest["name"] === "omo-ai") {
+    // The npm package's declared `omo` entry is the launcher when OMO re-executes it under Bun or Node.
+    const bin = manifest["bin"];
+    const relative = typeof bin === "string" ? bin
+      : object(bin) && typeof bin["omo"] === "string" ? bin["omo"] : undefined;
+    if (relative === undefined) return undefined;
+    const packaged = await realpath(join(runtimeRoot, relative)).catch(() => undefined);
+    if (packaged !== launcherPath) return undefined;
+    return { version: manifest["version"], runtimeRoot, layout: "npm" };
+  }
+  if (manifest["name"] !== "omo") return undefined;
+  const binary = await realpath(join(runtimeRoot, "omo")).catch(() => undefined);
+  if (binary === undefined || !(await stat(binary)).isFile()) return undefined;
+  if (binary !== launcherPath && await fileDigest(binary) !== launcherDigest) return undefined;
+  return { version: manifest["version"], runtimeRoot, layout: "binary" };
+}
+
 export async function fileDigest(path: string): Promise<string> {
   const info = await stat(path);
   const identity = `${info.dev}:${info.ino}:${info.size}:${info.mtimeMs}:${info.ctimeMs}`;
@@ -31,6 +59,7 @@ export async function installedRuntime(options: {
   readonly launcherPath: string;
   readonly launcherSourcePath: string;
   readonly launcherDigest: string;
+  readonly layout: RuntimeLayout;
 }> {
   const home = options.home ?? homedir();
   const launcherSourcePath = resolve(options.launcherPath ?? join(home, ".local", "bin", "omo"));
@@ -43,11 +72,18 @@ export async function installedRuntime(options: {
     throw new NativeError("engine-launcher-invalid");
   }
   const launcherDigest = await fileDigest(launcherPath);
+  const scriptLauncher = /\.(?:c|m)?js$/i.test(launcherPath);
   const cache = join(home, ".omo", "binary-runtime");
-  // Check the adjacent runtime before touching the optional cache.
+  // A JavaScript launcher lives in packageRoot/bin; a native launcher lives beside its runtime.
+  // Check those package roots before touching the optional binary-runtime cache, and never read
+  // the cache for a JavaScript launcher whose package layout is already known.
   async function* candidates(): AsyncGenerator<string> {
     if (options.runtimeRoot) { yield options.runtimeRoot; return; }
-    yield dirname(launcherPath);
+    const adjacent = dirname(launcherPath);
+    yield adjacent;
+    const packageRoot = dirname(adjacent);
+    if (packageRoot !== adjacent) yield packageRoot;
+    if (scriptLauncher) return;
     try {
       for (const entry of await readdir(cache, { withFileTypes: true })) {
         if (entry.isDirectory()) yield join(cache, entry.name);
@@ -59,12 +95,9 @@ export async function installedRuntime(options: {
   for await (const candidate of candidates()) {
     try {
       const runtimeRoot = await realpath(candidate);
-      const manifest: unknown = JSON.parse(await readFile(join(runtimeRoot, "package.json"), "utf8"));
-      if (!object(manifest) || manifest["name"] !== "omo" || typeof manifest["version"] !== "string") continue;
-      const binary = await realpath(join(runtimeRoot, "omo"));
-      if (!(await stat(binary)).isFile()) continue;
-      if (binary !== launcherPath && await fileDigest(binary) !== launcherDigest) continue;
-      return { version: manifest["version"], runtimeRoot, launcherPath, launcherSourcePath, launcherDigest };
+      const match = await runtimeMatch(runtimeRoot, launcherPath, launcherDigest);
+      if (match === undefined) continue;
+      return { ...match, launcherPath, launcherSourcePath, launcherDigest };
     } catch (error) {
       if (error instanceof Error && "code" in error && error.code === "ENOENT") continue;
       throw error;
