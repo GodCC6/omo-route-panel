@@ -1,5 +1,4 @@
 import { homedir } from "node:os";
-import { realpath } from "node:fs/promises";
 import { resolve } from "node:path";
 import { matchesKey, wrapTextWithAnsi } from "@earendil-works/pi-tui";
 import type { TUI } from "@earendil-works/pi-tui";
@@ -7,27 +6,21 @@ import { catalogExecutable, verifyCatalogExecutable } from "./catalog-process.js
 import { createPanelController } from "./editor.js";
 import { hostFailure, PanelError } from "./errors.js";
 import { catalogSnapshot, createNativeAdapter } from "./native/index.js";
-import { inside, NativeError } from "./native/config.js";
+import { NativeError } from "./native/config.js";
 import { runProcess } from "./native/process.js";
+import { verifyNpmHost } from "./npm-host.js";
 import { installedRuntime } from "./runtime.js";
 import { createPanelComponent } from "./tui.js";
 import type { PanelController } from "./tui-contract.js";
 import type { NativeModel } from "./native/index.js";
 import type { PanelComponent } from "./tui.js";
 
-/** The started engine must still come from the installation whose reports are loaded. */
-async function engineEntryInside(runtimeRoot: string): Promise<boolean> {
-  const entry = process.argv[1];
-  if (entry === undefined) return false;
-  try { return inside(runtimeRoot, await realpath(resolve(entry))); }
-  catch { return false; }
-}
-
 /** The public host seam used here, intentionally independent of SDK internals. */
 export interface HostContext {
   readonly mode: string;
   readonly cwd: string;
   readonly agentDir: string;
+  readonly loadedExtensionPaths?: readonly string[];
   readonly modelRegistry: { readonly modelRuntime: { getAvailable(): Promise<readonly NativeModel[]> } };
   readonly ui: {
     notify(message: string, type: "error" | "warning" | "info"): void;
@@ -104,15 +97,13 @@ export function extension(api: HostAPI): void {
                 || engine.runtimeRoot !== installation.runtimeRoot || engine.version !== installation.version) {
                 throw new NativeError("host-installation-changed");
               }
-              // A native runtime is bound by its mapped process image. An npm launcher is a script
-              // outside the process image, so bind the running engine entry to its package tree.
+              // Preserve the mapped-image check for binaries. npm needs evidence that
+              // predates engine loading, even when this extension was loaded after an upgrade.
               if (installation.layout === "binary") {
                 if (!await verifyCatalogExecutable(process.pid, installation.launcherDigest, abort.signal)) {
                   throw new NativeError("host-installation-changed");
                 }
-              } else if (!await engineEntryInside(installation.runtimeRoot)) {
-                throw new NativeError("host-installation-changed");
-              }
+              } else await verifyNpmHost(installation, ctx.loadedExtensionPaths);
             },
           },
         });
