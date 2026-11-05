@@ -4,7 +4,7 @@ User-visible changes are recorded here. Version numbers follow Semantic
 Versioning; a `0.x` minor release may change extension or configuration
 contracts. Dates identify releases, not local verification runs.
 
-## Unreleased
+## 0.1.1 - 2026-11-05
 
 ### Fixed
 
@@ -13,6 +13,9 @@ contracts. Dates identify releases, not local verification runs.
   that installation layout.
 - Host verification failures keep their safe stage/error code in the user-facing
   message instead of folding every failure into one generic sentence.
+- npm host verification rejects packages changed after the host process started,
+  including same-version replacements and reports rewritten with preserved mtimes.
+  Restart the host after upgrading its installation.
 
 ## 0.1.0 - 2026-10-30
 
