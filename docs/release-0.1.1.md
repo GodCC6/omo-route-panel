@@ -11,14 +11,17 @@ Publication remains blocked. The authenticated maintainer's staging request at
 `2026-11-05T02:25:04Z` returned npm `E403`: "Your account has been temporarily
 suspended due to a recent security-sensitive action." No 0.1.1 staging or
 publication succeeded; the public `latest` tag still points to `0.1.0`
-(verified: 2026-11-05). The hold's start and expiry are unknown.
+(verified: 2026-11-05). The maintainer confirmed recovery-code login on
+2026-11-05. The hold's exact start and expiry are unknown.
 
 npm's [account recovery documentation](https://docs.npmjs.com/recovering-your-2fa-enabled-account/)
 describes an automatic 72-hour publishing hold after recovery-code login, which
-cannot be lifted early. Whether that specific cause applies to this account has
-not been established. No alternate publishing channel or repeated write was
-attempted after the denial. Once npm restores publishing, resume with the same
-tested tarball, then verify registry integrity and isolated installation.
+cannot be lifted early. No alternate publishing channel or repeated write was
+attempted after the denial. Resume no earlier than `2026-11-08T02:26:04Z`:
+72 hours plus one minute after the first denial, a conservative upper bound
+rather than an invented hold-start timestamp. A durable session watch is armed
+for that time. Once npm restores publishing, resume with the same tested tarball,
+then verify registry integrity and isolated installation.
 
 ## Candidate verification
 
