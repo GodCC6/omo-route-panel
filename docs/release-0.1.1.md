@@ -2,7 +2,23 @@
 
 Verified: 2026-11-05. This record covers the PR #6 release candidate for
 [issue #5](https://github.com/GodCC6/omo-route-panel/issues/5).
-Publication is pending owner authentication and final review.
+Independent gate review approved the candidate with zero blockers. The two base
+CI jobs and the native CI job passed. PR #6 merged as
+`d7abe207b809a7ac2709b939fb0714f31a17bd3d` at `2026-11-05T02:24:18Z`;
+issue #5 closed at `2026-11-05T02:24:19Z`.
+
+Publication remains blocked. The authenticated maintainer's staging request at
+`2026-11-05T02:25:04Z` returned npm `E403`: "Your account has been temporarily
+suspended due to a recent security-sensitive action." No 0.1.1 staging or
+publication succeeded; the public `latest` tag still points to `0.1.0`
+(verified: 2026-11-05). The hold's start and expiry are unknown.
+
+npm's [account recovery documentation](https://docs.npmjs.com/recovering-your-2fa-enabled-account/)
+describes an automatic 72-hour publishing hold after recovery-code login, which
+cannot be lifted early. Whether that specific cause applies to this account has
+not been established. No alternate publishing channel or repeated write was
+attempted after the denial. Once npm restores publishing, resume with the same
+tested tarball, then verify registry integrity and isolated installation.
 
 ## Candidate verification
 
@@ -36,7 +52,8 @@ The tested tarball contains 29 files with integrity:
 sha512-7oRyBygB6yY6ctQclXjkvZCK3VvQ5dRxkzL+PGZe3hAZjeIco+b+yJaBLP0zA0mDfgrEZjeWSSlolPTY/tnmZw==
 ```
 
-Local synthetic evidence is retained outside the published package:
-`/tmp/omo-pr6-fixed-qa/{npm,bun}/events.json` and
-`/tmp/omo-pr6-npm-diagnosis/events.json`. These temporary paths are local
-verification artifacts, not permanent public downloads.
+The tested tarball and synthetic evidence are retained outside the published
+package under ignored `artifacts/0.1.1/`: `omo-route-panel-0.1.1.tgz`,
+`omo-pr6-fixed-qa/{npm,bun}/events.json` and
+`omo-pr6-npm-diagnosis/events.json`. These local verification artifacts are not
+permanent public downloads.
