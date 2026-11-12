@@ -105,7 +105,8 @@ omo install npm:omo-route-panel@<version>
 
 The installation command above is for the isolated acceptance environment;
 ordinary users run it with their normal OMO configuration. Update the dated
-[release evidence](release-0.1.1.md) with actual results.
+release evidence with actual results; see [0.1.1](release-0.1.1.md) and
+[0.1.2](release-0.1.2.md).
 The [first-release record](first-public-release.md) preserves the earlier
 publication and authentication history.
 
