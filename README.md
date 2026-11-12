@@ -38,6 +38,19 @@ Install persistently in OMO:
 omo install npm:omo-route-panel
 ```
 
+Upgrading from a registered `0.1.0` source checkout requires removing the old
+source entry. Installing the npm package does not replace it, and keeping both
+can leave `/route-panel` handled by the legacy extension. Remove the source
+checkout with the same path originally passed to `omo install` (add `--local`
+for a project-local registration), then restart OMO:
+
+```sh
+omo remove /absolute/path/to/omo-route-panel
+```
+
+Keep only `npm:omo-route-panel` (or a versioned npm entry) as the Route Panel
+registration in `packages`.
+
 For one session:
 
 ```sh
@@ -153,6 +166,17 @@ npm 包包含预编译扩展。已验证版本与安装结果见
 ```sh
 omo install npm:omo-route-panel
 ```
+
+从已注册的 `0.1.0` 源码目录升级时，需要移除旧的 source 注册项。安装 npm 包不会
+替换该项；同时保留两者可能让 `/route-panel` 仍由旧扩展处理。请用最初传给
+`omo install` 的相同路径移除源码目录（项目级注册需添加 `--local`），然后重启 OMO：
+
+```sh
+omo remove /absolute/path/to/omo-route-panel
+```
+
+`packages` 中应只保留 `npm:omo-route-panel`（或带版本的 npm 项）这一个
+Route Panel 注册项。
 
 单次会话加载：
 
