@@ -4,6 +4,15 @@ User-visible changes are recorded here. Version numbers follow Semantic
 Versioning; a `0.x` minor release may change extension or configuration
 contracts. Dates identify releases, not local verification runs.
 
+## 0.1.3 - 2026-11-12
+
+### Changed
+
+- README documents the upgrade path from a registered `0.1.0` source
+  checkout: remove the old source entry with `omo remove` and keep only the
+  npm package registration, otherwise `/route-panel` can stay handled by the
+  legacy extension. Extension code is unchanged.
+
 ## 0.1.2 - 2026-11-12
 
 ### Added
