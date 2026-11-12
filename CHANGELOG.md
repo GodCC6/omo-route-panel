@@ -4,6 +4,19 @@ User-visible changes are recorded here. Version numbers follow Semantic
 Versioning; a `0.x` minor release may change extension or configuration
 contracts. Dates identify releases, not local verification runs.
 
+## 0.1.2 - 2026-11-12
+
+### Added
+
+- Automated npm publishing: merging a version bump to `main` validates the
+  change and publishes the tarball through npm trusted publishing (OIDC),
+  then records a `v<version>` tag. Versions without a bump skip publishing.
+
+### Changed
+
+- The release guide describes the automated flow, the trusted-publisher
+  binding and the manual fallback.
+
 ## 0.1.1 - 2026-11-05
 
 ### Fixed

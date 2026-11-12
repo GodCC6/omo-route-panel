@@ -1,6 +1,6 @@
 {
   "name": "omo-route-panel",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "A native OMO TUI extension for inspecting and editing new-task routing.",
   "license": "MIT",
   "author": "OMO Route Panel contributors",

@@ -1,11 +1,44 @@
 # Releasing on npm
 
-Updated: 2026-10-30.
+Updated: 2026-11-12.
 Package: `omo-route-panel`. Maintainer: `cc922`.
 
-Releases use the maintainer's normal npm account. GitHub Actions runs tests;
-it does not publish. There is no custom release workflow, OIDC binding
-requirement, repository approval environment, or publication wrapper.
+Releases are automated through npm trusted publishing (OIDC). A pull request
+that updates the package version and changelog, merged to `main`, is validated
+by the usual CI jobs and then published by the `publish` job in
+`.github/workflows/base.yml`. No npm token is stored in the repository or CI.
+
+## Automated release flow
+
+1. Update the `package.json` version and add a `CHANGELOG.md` entry in a PR.
+2. Merge to `main`. CI runs `validate:base`, `check:docs`, `test:packaging`
+   and the native and real-host suites as on any change.
+3. After all validation jobs pass, the `publish` job compares the package
+   version with the registry, packs a fresh tarball with `bun run pack`,
+   publishes `artifacts/omo-route-panel-<version>.tgz` via
+   `npm publish --ignore-scripts --access public`, and pushes the `v<version>`
+   tag. An unchanged version skips publishing with a notice.
+
+npm generates provenance attestations automatically for publishes from this
+public repository. A failed publish can be re-run from its workflow run; the
+registry rejects an already-published version. npm allows unpublishing a
+version within 24 hours of publication; later corrections can only mark it
+deprecated.
+
+## Trusted publisher binding
+
+The package settings on npmjs.com bind publishing to this repository's
+workflow: GitHub Actions, `GodCC6/omo-route-panel`, workflow file `base.yml`,
+allowed actions `npm publish` and `npm stage publish`. The binding was
+configured on 2026-11-12 and requires the maintainer's own 2FA. npm validates
+a new binding through its first successful publish within 2 days of creation.
+The workflow filename is part of the binding: renaming `base.yml` requires
+deleting and recreating the binding.
+
+To require per-release approval instead, switch the binding's allowed actions
+to stage-only: the workflow then stages the version through `npm stage
+publish`, and the maintainer approves it in npm Staged Packages from any
+device. No repository change is needed.
 
 ## Verify and pack
 
@@ -35,7 +68,7 @@ The package contains compiled extension/worker JavaScript, its manifest,
 README, changelog, license and notices. `jsonc-parser` is the runtime dependency.
 OMO supplies the optional `"*"` terminal peer. Consumers need no compiler.
 
-## Publish the tested artifact
+## Publish manually (fallback)
 
 After updating the version and changelog, publish the verified tarball:
 

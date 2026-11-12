@@ -11,7 +11,7 @@ The npm package contains the precompiled extension. See
 [first public release status](https://github.com/GodCC6/omo-route-panel/blob/main/docs/first-public-release.md)
 for the verified version and installation results, and the
 [release guide](https://github.com/GodCC6/omo-route-panel/blob/main/docs/releasing.md)
-for ordinary npm account publishing.
+for the automated trusted-publishing release flow.
 
 ### Features
 
@@ -129,7 +129,7 @@ implementation evidence, not current installation guidance.
 
 npm 包包含预编译扩展。已验证版本与安装结果见
 [首次公开发布状态](https://github.com/GodCC6/omo-route-panel/blob/main/docs/first-public-release.md)，
-普通 npm 账号发布步骤见[发布指南](https://github.com/GodCC6/omo-route-panel/blob/main/docs/releasing.md)。
+自动化发布流程见[发布指南](https://github.com/GodCC6/omo-route-panel/blob/main/docs/releasing.md)。
 
 ### 功能
 

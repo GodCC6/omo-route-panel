@@ -84,7 +84,7 @@ OMO_LAUNCHER_PATH="/absolute/path/to/omo" bun run test:package-host
   `pack` builds isolated source into `artifacts/*.tgz`; `prepare:host` fetches
   the checksum-verified macOS OMO `5.1.51` host fixture into a temporary
   directory when needed. Use the [release guide](docs/releasing.md) for the
-  ordinary npm account publishing and remote owner confirmation, and
+  automated trusted-publishing release flow and the manual fallback, and
   [first public release status](docs/first-public-release.md)
   for public repository and CI rollout records.
 - **Documentation:** `check:docs` checks relative Markdown targets and public
