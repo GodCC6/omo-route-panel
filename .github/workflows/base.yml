@@ -113,7 +113,7 @@ jobs:
         run: bun run pack
       - name: Publish the tested tarball through trusted publishing
         if: steps.version.outputs.skip == 'false'
-        run: npm publish "artifacts/omo-route-panel-${{ steps.version.outputs.version }}.tgz" --ignore-scripts --access public
+        run: npm publish "./artifacts/omo-route-panel-${{ steps.version.outputs.version }}.tgz" --ignore-scripts --access public
       - name: Tag the released version
         if: steps.version.outputs.skip == 'false'
         run: |

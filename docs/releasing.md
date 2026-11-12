@@ -74,7 +74,7 @@ After updating the version and changelog, publish the verified tarball:
 
 ```sh
 npm whoami
-npm publish artifacts/omo-route-panel-<version>.tgz --access public --ignore-scripts
+npm publish ./artifacts/omo-route-panel-<version>.tgz --access public --ignore-scripts
 ```
 
 npm performs its normal account verification. Complete login and any required
@@ -84,7 +84,7 @@ For remote work, npm's own staging feature avoids a browser prompt on the build
 machine:
 
 ```sh
-npm stage publish artifacts/omo-route-panel-<version>.tgz --access public --ignore-scripts
+npm stage publish ./artifacts/omo-route-panel-<version>.tgz --access public --ignore-scripts
 ```
 
 Then sign in to npm on **your current device**, open your account's
